@@ -13,7 +13,7 @@ headers = {
     'Upgrade-Insecure-Requests': '1'
 }
 
-def scrape_headlines(url, headers):
+def scrape_latest_article_link(url, headers):
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -26,23 +26,41 @@ def scrape_headlines(url, headers):
         if news_list:
             headline = news_list.find_all('h2', class_="headline")
             for h in headline:
-                headlines.append(h.find('a').text.strip())
+                headlines.append(h.find('a').get('href'))
 
 
     
     except Exception as e:
         print(f"Error: {e}")
     
-    return headlines
+    return headlines[2]
+
+def scrape_article(url, headers):
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'html.parser')
+        article_list = []
+        article_div = soup.find_all('div', class_="storyParagraph")
+        
+        for index in article_div:
+            article_list.append(index.get_text(strip=True))
+
+        article = "".join(article_list[:-2])
+    except Exception as e:
+        print(f"Error: {e}")
+    
+    return article
 
 if __name__ == "__main__":
-    headlines = scrape_headlines(url, headers)
-    
-    for h in headlines[:3]:
-        response = requests.post(
-        'http://localhost:5000/analyze',
-        json={"article": h}
-        )
 
-        for i in response.json():
-            print(i)
+    article_link = scrape_latest_article_link(url, headers)
+    article = scrape_article("https://www.livemint.com" + article_link, headers)
+
+    response = requests.post(
+    'http://localhost:5000/analyze',
+    json={"article": article}
+    )
+
+    for i in response.json():
+        print(i)

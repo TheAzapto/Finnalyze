@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 import json
-from backend.FinLlama_Middleware import Summarize, Evaluate
+from FinLlama_Middleware import Summarize, Evaluate
 
 app = Flask(__name__)
 

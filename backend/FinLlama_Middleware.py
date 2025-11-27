@@ -57,7 +57,10 @@ def Evaluate(sen:str) -> str:
     4. Consider market impact, investor sentiment, and economic implications for each company
     5. Use decimal precision (e.g., -0.73, 0.42, 0.15)
 
-    **Sentence to Analyze:**\n""" + sen + """\n**Scoring Guidelines:**
+    **Sentence to Analyze:**
+    {sen}
+
+    **Scoring Guidelines:**
     - Strong negative words (crash, plunge, collapse, crisis) → -0.7 to -1.0
     - Moderate negative words (decline, fall, weak, concern) → -0.3 to -0.6
     - Neutral words (stable, unchanged, maintained) → -0.2 to 0.2
@@ -65,17 +68,15 @@ def Evaluate(sen:str) -> str:
     - Strong positive words (surge, soar, breakthrough, boom) → 0.7 to 1.0
 
     **Output Format (JSON array only):**
-    [\{"company": "Company Name", "impact_score": 0}]
-
+    [{{"company": "Company Name", "impact_score": 0}}]
     For multiple companies:
-    [{"company": "Company A", "impact_score": 0.5}, {"company": "Company B", "impact_score": -0.3}]
+    [{{"company": "Company A", "impact_score": 0.5}}, {{"company": "Company B", "impact_score": -0.3}}]
 
-    **CRITICAL: 
+    **CRITICAL:**
     - ALWAYS return a JSON array (list), even for a single company
     - Return ONLY valid JSON array
     - No explanations, no additional text, no markdown formatting
-    - Each company gets its own impact score
-    - Match the company name to a company from this list:\n""" + str(company_list) + "**"
+    - Each company gets its own impact score**""" 
 
 
     response: GenerateResponse = generate(model="hf.co/us4/fin-llama3.1-8b:Q5_K_M", 
