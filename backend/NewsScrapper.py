@@ -53,14 +53,17 @@ def scrape_article(url, headers):
     return article
 
 if __name__ == "__main__":
+    while True:
 
-    article_link = scrape_latest_article_link(url, headers)
-    article = scrape_article("https://www.livemint.com" + article_link, headers)
+        article_link = scrape_latest_article_link(url, headers)
+        article = scrape_article("https://www.livemint.com" + article_link, headers)
 
-    response = requests.post(
-    'http://localhost:5000/analyze',
-    json={"article": article}
-    )
+        response = requests.post(
+        'http://localhost:5000/analyze',
+        json={"article": article}
+        )
 
-    for i in response.json():
-        print(i)
+        for i in response.json():
+            print(i)
+        
+        sleep(600)
