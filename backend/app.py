@@ -14,12 +14,15 @@ def get_impact_score():
         print('Generating Summary')
         summary = Summarize(article)
         print('Generating Impact Scores')
-        impact_scores = json.loads(Evaluate(summary))
+        impact_scores = Evaluate(summary)
+        if impact_scores != '[]':
+            impact_scores = json.loads(impact_scores)
 
         return impact_scores, 200
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(e.with_traceback(e.__traceback__))
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
