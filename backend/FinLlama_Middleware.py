@@ -1,9 +1,44 @@
 from ollama import generate, GenerateResponse
-import csv
+from thefuzz import fuzz
+import pandas as pd
+import json
 
-with open('StockNames.csv', 'r') as f:
-    reader = csv.reader(f)
-    company_list = [row[0] for row in reader][1:]
+def fuzzy_match(LLM_json_output: str) -> str|None: 
+
+    name = LLM_json_output['company']
+    impact_score = LLM_json_output['impact_score']
+
+    print(name)
+    print(impact_score)
+
+
+    with open('backend\StockNames.csv', 'r') as f:
+        reader = pd.read_csv(f)
+        company_list = reader['Names'].tolist()
+
+        print(company_list[0])
+
+
+
+    for company in company_list:
+        ratio_partial = fuzz.partial_ratio(name, company)
+        if ratio_partial > 92:
+            print(ratio_partial)
+            return f'{{"company": "{company}", "impact_score": {impact_score}}}'
+
+            
+        
+        ratio_full = fuzz.ratio(name, company)
+        if ratio_full > 92:
+            print(ratio_full)
+            return f'{{"company": "{company}", "impact_score": {impact_score}}}'
+
+        ratio_token = fuzz.token_sort_ratio(name, company)
+        if ratio_token > 92:
+            print(ratio_token)
+            return f'{{"company": "{company}", "impact_score": {impact_score}}}'
+        
+    return None
 
 def Summarize(msg:str) -> str:
     prompt=f"""You are a financial text analysis expert. Your task is to analyze the provided article and generate a single summary sentence for sentiment analysis.
@@ -41,7 +76,6 @@ def Summarize(msg:str) -> str:
     return response.response
 
 def Evaluate(sen:str) -> str:
-    global company_list
 
     prompt=f"""You are a financial sentiment analysis expert. Your task is to evaluate the provided sentence and assign precise impact scores.
 
@@ -91,4 +125,18 @@ def Evaluate(sen:str) -> str:
     'num_thread': 16,
     })
 
-    return response.response
+    validated_list = []
+
+    print(response.response)
+
+    for token in json.loads(str(response.response).replace("'", '"')):
+        print(token)
+        validated_string = fuzzy_match(token)
+
+        print(validated_string)
+        if validated_string:
+            validated_list.append(json.loads(validated_string))
+        
+    print(validated_list)
+
+    return str(validated_list).replace("'", '"')
