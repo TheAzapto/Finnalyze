@@ -13,6 +13,7 @@ def get_impact_score():
     
         print('Generating Summary')
         summary = Summarize(article)
+        print(summary)
         print('Generating Impact Scores')
         impact_scores = Evaluate(summary)
         if impact_scores != '[]':
