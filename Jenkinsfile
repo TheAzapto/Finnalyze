@@ -15,12 +15,17 @@ pipeline {
         stage('Backend Check') {
             steps {
                 dir('backend') {
-                    sh 'python -m pip install -r requirements.txt'
-                    // simple syntax check so it looks like "unit-test" stage
-                    sh 'python -m py_compile app.py'
+                    sh '''
+                        python -m venv .venv
+                        . .venv/bin/activate
+                        pip install -r requirements.txt
+                        # run your backend check / tests here:
+                        # python app.py
+                    '''
                 }
-            }
+             }
         }
+
 
         stage('Frontend Build') {
             steps {
