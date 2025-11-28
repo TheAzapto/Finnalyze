@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+// The frontend now uses backend proxy endpoints for MongoDB data.
+// If you want to use the Atlas Data API directly from the client, re-add a client helper
+// and set REACT_APP_MONGO_API_URL / REACT_APP_MONGO_API_KEY in a local .env file.
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -8,8 +8,25 @@ function NewsPage() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/market-news");
-        setArticles(res.data || []);
+        // Prefer backend mongo proxy first
+        try {
+          const res = await axios.get('http://localhost:5000/mongo/news');
+          console.debug('/mongo/news response status:', res.status, 'length:', Array.isArray(res.data) ? res.data.length : 'n/a');
+          if (Array.isArray(res.data) && res.data.length) {
+              console.debug('Using backend proxy /mongo/news with', res.data.length, 'articles');
+              // limit to 20 most recent
+              const limited = res.data.slice(0, 20);
+              setArticles(limited);
+              setLoading(false);
+              return;
+            }
+        } catch (e) {
+          console.debug('Backend mongo proxy failed or returned empty, trying other sources:', e && e.message ? e.message : e);
+        }
+
+        // Final fallback: previous sample feed endpoint
+        const res2 = await axios.get("http://localhost:5000/market-news");
+        setArticles((res2.data || []).slice(0, 20));
       } catch (err) {
         console.error(err);
         setArticles([]);
@@ -23,7 +40,7 @@ function NewsPage() {
   return (
     <div className="page-root">
       <h1>Market News</h1>
-      <p>Latest headlines from Yahoo Finance / sample feed.</p>
+      <p>Latest headlines from Yahoo Finance</p>
 
       {loading && <p className="placeholder">Loading news...</p>}
 
