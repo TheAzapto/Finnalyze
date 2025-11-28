@@ -1,32 +1,31 @@
 from flask import Flask, jsonify, request
 import json
 from flask_cors import CORS
-from FinLlama_Middleware import Summarize, Evaluate
+from FinLlama_Middleware import Evaluate
 import requests
 from bs4 import BeautifulSoup
 import yfinance as yf
 
 app = Flask(__name__)
-CORS(app)
-@app.route('/analyze', methods=['POST'])
-def get_impact_score():
+CORS(app, origins="*")
+
+@app.route("/evaluate", methods=["POST"])
+def evaluate():
     try:
         article = request.json.get('article')
         if not article:
             return jsonify({'error': 'Article is required'}), 400
-    
-        print('Generating Summary')
-        summary = Summarize(article)
-        print(summary)
-        print('Generating Impact Scores')
-        impact_scores = Evaluate(summary)
-        if impact_scores != '[]':
-            impact_scores = json.loads(impact_scores)
+        
+        impact_score = Evaluate(article)
+        # impact_score = float(impact_score)
+        # result = json.load({"impact_score": impact_score})
+        
+        print(impact_score)
 
-        return impact_scores, 200
+        return impact_score, 200
     
     except Exception as e:
-        print(e.with_traceback(e.__traceback__))
+        print(e)
         return jsonify({"error": str(e)}), 500
 
 @app.route("/market", methods=["GET"])
