@@ -3,6 +3,9 @@ __pycache__/
 
 trial.ipynb
 test.py
+NewsScrapper.py
+FinLlama_Middleware.py
+Predictor.py
 
 *.pyc
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
