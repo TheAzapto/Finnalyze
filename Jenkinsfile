@@ -54,7 +54,7 @@ pipeline {
                 // stop old containers (if any)
                 sh '''
                     docker-compose down || true
-                // start new ones in background
+                    
                     docker-compose up -d
                 '''
             }
