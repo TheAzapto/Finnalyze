@@ -12,19 +12,20 @@ pipeline {
             }
         }
 
-        stage('Backend Check') {
+       stage('Backend Check') {
             steps {
                 dir('backend') {
                     sh '''
-                        if [ ! -d ".venv" ]; then
-                            python -m venv .venv
-                        fi
+                        rm -rf .venv
+                        python -m venv .venv
                         . .venv/bin/activate
                         pip install -r requirements.txt
+                        # run your backend app/tests here if needed, e.g.:
+                        # python app.py
                     '''
                 }
-             }
-        }
+            }
+        } 
 
 
        stage('Frontend Build') {
