@@ -52,9 +52,11 @@ pipeline {
         stage('Deploy with Docker Compose') {
             steps {
                 // stop old containers (if any)
-                sh "${DOCKER_COMPOSE} down || true"
+                sh '''
+                    docker-compose down || true"
                 // start new ones in background
-                sh "${DOCKER_COMPOSE} up -d"
+                    docker-compose up -d
+                '''
             }
         }
     }
