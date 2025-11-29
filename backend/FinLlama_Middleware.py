@@ -74,11 +74,11 @@ import json
 
 def Evaluate(sen:str) -> float:
 
-    prompt=f"""You are a financial sentiment analysis expert. Your task is to evaluate the provided sentence and assign precise impact scores.
+    prompt=f"""You are a financial sentiment analysis expert. Your task is to evaluate the provided article and assign precise impact scores.
 
     **Instructions:**
-    1. Analyze the sentiment and financial implications of the sentence
-    2. Identify ALL companies or entities mentioned in the sentence
+    1. Analyze the sentiment and financial implications of the Article
+    2. Identify ALL companies or entities mentioned in the article
     3. For EACH company, assign an impact score between -1.0 and 1.0 where:
        - -1.0 = extremely negative impact
        - -0.5 = moderately negative impact
@@ -88,7 +88,7 @@ def Evaluate(sen:str) -> float:
     4. Consider market impact, investor sentiment, and economic implications for each company
     5. Use decimal precision (e.g., -0.73, 0.42, 0.15)
 
-    **Sentence to Analyze:**
+    **Article to Analyze:**
     {sen}
 
     **Scoring Guidelines:**
@@ -102,13 +102,16 @@ def Evaluate(sen:str) -> float:
     Return ONLY a single float number between -1.0 and 1.0
     
     **Examples of valid outputs:**
+    -1.0
     0.75
     -0.42
     0.0
     -0.88
     0.33
+    1.0
 
     **CRITICAL RULES:**
+    - Make sure the impact score accurately reflects the sentiment of the sentence
     - Output must be a valid float number with up to 2 decimal places
     - No explanations, no text, no labels, no markdown
     - No words like "score:", "impact:", or any prefixes
