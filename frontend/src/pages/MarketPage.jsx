@@ -1,6 +1,8 @@
 // src/pages/MarketPage.jsx
 import React, { useEffect, useState } from "react";
 import api from "../api/backend";
+// Note: this page uses the backend `/market` endpoint (Yahoo Finance snapshot)
+// to avoid showing DB-sourced zero/placeholder prices. Backend provides an expanded ticker list.
 
 const MarketPage = () => {
   const [rows, setRows] = useState([]);
@@ -10,6 +12,7 @@ const MarketPage = () => {
   useEffect(() => {
     const fetchMarket = async () => {
       try {
+        // Use the backend `/market` endpoint which pulls live prices (Yahoo Finance snapshot)
         const res = await api.get("/market");
         setRows(res.data || []);
       } catch (err) {
