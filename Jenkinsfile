@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_COMPOSE = "docker-compose"   // or "docker-compose" if that's what works on your setup
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -12,7 +8,7 @@ pipeline {
             }
         }
 
-       stage('Backend Check') {
+        stage('Backend Check') {
             steps {
                 dir('backend') {
                     sh '''
@@ -20,15 +16,14 @@ pipeline {
                         python -m venv .venv
                         . .venv/bin/activate
                         pip install -r requirements.txt
-                        # run your backend app/tests here if needed, e.g.:
+                        # run backend checks here if you want, e.g.:
                         # python app.py
                     '''
                 }
             }
-        } 
+        }
 
-
-       stage('Frontend Build') {
+        stage('Frontend Build') {
             steps {
                 dir('frontend') {
                     sh '''
@@ -42,26 +37,27 @@ pipeline {
             }
         }
 
-
         stage('Build Docker Images') {
             steps {
-                sh "${DOCKER_COMPOSE} build"
+                sh '''
+                    docker-compose build
+                '''
             }
         }
 
         stage('Deploy with Docker Compose') {
             steps {
-                // stop old containers (if any)
-                sh "${DOCKER_COMPOSE} down || true"
-                // start new ones in background
-                sh "${DOCKER_COMPOSE} up -d"
+                sh '''
+                    docker-compose down || true
+                    docker-compose up -d
+                '''
             }
         }
     }
 
     post {
         always {
-            echo "Pipeline finished."
+            echo 'Pipeline finished.'
         }
     }
 }
