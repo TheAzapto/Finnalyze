@@ -61,7 +61,52 @@ This script will:
 3. Send the content to the running Flask API.
 4. Print the JSON response containing company names and their impact scores.
 
-## Project Structure
+Key Cybersecurity Risk
+Web Scraping Risks
+IP blocking/rate limiting - Aggressive scraping can get your IP banned from news sources
+Legal exposure - Some sites prohibit scraping in their Terms of Service, potentially leading to CFAA violations
+Malicious content injection - Scraped sites could contain XSS payloads or malware if not properly sanitized
+Data poisoning - Scraped content could be manipulated by attackers to influence your model's predictions
+Model & Data Risks
+Training data poisoning - If scraping from public sources, attackers could plant misleading articles to bias your model
+Model theft - Fine-tuned models represent valuable IP; unauthorized access to your Ollama instance could expose them
+Prompt injection - If users can input queries, they might manipulate the model to produce harmful outputs or leak training data
+Overfitting on manipulated data - Market manipulation attempts in news could skew your sentiment analysis
+Infrastructure Risks
+Exposed Ollama API - Default Ollama setup listens on localhost, but if exposed to network without authentication, anyone can query/modify models
+Credential exposure - API keys for news sources, database passwords, or cloud credentials in code/config files
+Dependency vulnerabilities - Python libraries for scraping (BeautifulSoup, Scrapy) and ML (transformers, etc.) may have known CVEs
+Resource exhaustion - Ollama models are resource-intensive; DoS attacks could overwhelm your system
+Data Privacy & Compliance
+PII in scraped content - News articles might contain personal information requiring GDPR/CCPA compliance
+Financial data regulations - Depending on jurisdiction, providing financial analysis may require licensing
+Data retention - Storing historical news data creates liability if breached
+Mitigation Recommendations
+Scraping Security
+Use official APIs where available instead of scraping
+Implement proper rate limiting and respect robots.txt
+Sanitize all scraped HTML to prevent XSS
+Validate data integrity before feeding to model
+Use rotating proxies/user agents responsibly
+Model Protection
+Keep Ollama API on localhost or behind authentication
+Implement input validation and output filtering
+Version control your models and monitor for unauthorized changes
+Consider adversarial training to resist poisoned inputs
+Infrastructure Hardening
+Use environment variables for all credentials
+Regularly update dependencies (run pip audit)
+Implement request throttling if exposing any APIs
+Run services in containers with minimal privileges
+Set up monitoring for unusual resource usage
+Operational Security
+Don't store raw API keys in git repositories
+Log all data sources for audit trails
+Implement circuit breakers for scraping failures
+Have incident response plan for model manipulation detection
+
+
+
 
 - `backend/app.py`: The Flask API server handling analysis requests.
 - `backend/FinLlama_Middleware.py`: Contains functions `Summarize` and `Evaluate` that interact with the Ollama LLM.
