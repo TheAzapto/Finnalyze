@@ -16,11 +16,11 @@ pipeline {
             steps {
                 dir('backend') {
                     sh '''
-                        python -m venv .venv
+                        if [ ! -d ".venv" ]; then
+                            python -m venv .venv
+                        fi
                         . .venv/bin/activate
                         pip install -r requirements.txt
-                        # run your backend check / tests here:
-                        # python app.py
                     '''
                 }
              }
