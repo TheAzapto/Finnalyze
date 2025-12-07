@@ -6,13 +6,16 @@ from FinLlama_Middleware import Evaluate
 from time import sleep
 import os
 from predictor import get_prediction
+from dotenv import load_dotenv
 
-client = MongoClient('mongodb+srv://root:1234@cluster0.260lmcy.mongodb.net/')
+load_dotenv()
+
+client = MongoClient(os.getenv('MONGODB_URI'))
 db = client['Finnalyze']
 collection = db['stockData']
 
 
-with open('backend\stockList.json', 'r') as f:
+with open(os.path.join(os.getcwd(), r'.\LLM_Files\stockList.json'), 'r') as f:
     stockList = json.load(f)
 
 epoch = 0
@@ -24,7 +27,7 @@ while True:
         for stock in stockList:
             os.system('cls')
             # print(f"Epoch {epoch}")
-            # print(f"Updated {update_count} stocks")
+            # print(f"Updated {update_count} stocks\n")
             stockCode = stock['code'] + '.NS'
             news = yf.Ticker(stockCode).get_news()
 

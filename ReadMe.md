@@ -31,7 +31,10 @@ Before running the project, ensure you have the following installed:
     It is recommended to use a virtual environment.
 
     ```bash
-    pip install flask requests beautifulsoup4 ollama
+    pip install virtualenv
+    virtualenv .venv
+    .venv\Scripts\activate
+    pip install -r requirements.txt
     ```
 
 ## Usage
@@ -51,7 +54,7 @@ The server will start on `http://localhost:5000`.
 The scraper fetches the latest news and sends it to the backend for analysis.
 
 ```bash
-python backend/NewsScrapper.py
+python backend/LLM_Files/NewsScrapper.py
 ```
 
 This script will:
