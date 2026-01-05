@@ -56,21 +56,21 @@ function NewsPage() {
                 {article.source || "Yahoo Finance"}
               </span>
               {article.published && (
-                <span className="news-time">{article.published}</span>
+                <span className="news-time"> {article.published}</span>
               )}
             </div>
             <h3>{article.title}</h3>
             {article.summary && (
               <p className="news-summary">{article.summary}</p>
             )}
-            <a
+            {/* <a
               href={article.url}
               target="_blank"
               rel="noreferrer"
               className="news-link"
-            >
-              Read article →
-            </a>
+            > */}
+              {/* Read article → */}
+            {/* </a> */}
           </article>
         ))}
       </div>

@@ -15,19 +15,14 @@ db = client['Finnalyze']
 collection = db['stockData']
 
 
-with open(os.path.join(os.getcwd(), r'.\LLM_Files\stockList.json'), 'r') as f:
+with open(os.path.join(os.getcwd(), r'backend\LLM_Files\stockList.json'), 'r') as f:
     stockList = json.load(f)
-
-epoch = 0
-update_count = 0
 
 while True:
     
     try:
         for stock in stockList:
             os.system('cls')
-            # print(f"Epoch {epoch}")
-            # print(f"Updated {update_count} stocks\n")
             stockCode = stock['code'] + '.NS'
             news = yf.Ticker(stockCode).get_news()
 
@@ -44,8 +39,6 @@ while True:
                     {"code": stockCode.replace('.NS', '')},
                     {"$set": updates}
                 )
-
-                update_count += 1
 
                 continue
 
@@ -70,13 +63,6 @@ while True:
                     {"code": stockCode.replace('.NS', '')},
                     {"$set": updates}
                 )
-
-                update_count += 1
-                
-                
-
-        sleep(600)
-        epoch += 1
                 
     except KeyboardInterrupt as e:
         break

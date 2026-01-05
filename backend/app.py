@@ -52,43 +52,15 @@ def mongo_debug():
         return jsonify({'ok': False, 'error': str(e)}), 500
 
 
+ 
+
 @app.route("/market", methods=["GET"])
 def market_overview():
-    # choose a larger set of tickers/indices to populate the market table
-    symbols = [
-        # US indices
-        "^GSPC",   # S&P 500
-        "^DJI",    # Dow 30
-        "^IXIC",   # Nasdaq
-        # Indian indices
-        "^NSEI",   # Nifty 50
-        "^BSESN",  # BSE Sensex
-        # Large Indian stocks (NSE suffix)
-        "RELIANCE.NS",
-        "TCS.NS",
-        "HDFCBANK.NS",
-        "INFY.NS",
-        "ICICIBANK.NS",
-        "LT.NS",
-        "ITC.NS",
-        "SBIN.NS",
-        "KOTAKBANK.NS",
-        "AXISBANK.NS",
-        "BHARTIARTL.NS",
-        "HINDUNILVR.NS",
-        "BAJFINANCE.NS",
-        "MARUTI.NS",
-        "ONGC.NS",
-        "POWERGRID.NS",
-        "TITAN.NS",
-        "ULTRACEMCO.NS",
-        "M&M.NS",
-        "SUNPHARMA.NS",
-        # Additional international/sector tickers
-        "^FTSE",
-        "^STOXX50E",
-        "^N225",
-    ]
+    page = 1
+    with open(os.path.join(os.getcwd(), r'LLM_Files\stockList.json'), 'r') as f:
+        symbols = json.load(f)
+
+    symbols = [stock['code'] + '.NS' for stock in symbols[(page-1)*20:page*20]]
 
     tickers = yf.Tickers(" ".join(symbols))
     rows = []
