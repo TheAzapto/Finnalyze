@@ -45,4 +45,5 @@ export const SkeletonNewsGrid = ({ count = 6 }) => (
     </div>
 );
 
-export default { SkeletonLine, SkeletonCard, SkeletonTable, SkeletonNewsGrid };
+const SkeletonComponents = { SkeletonLine, SkeletonCard, SkeletonTable, SkeletonNewsGrid };
+export default SkeletonComponents;
