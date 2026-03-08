@@ -1,51 +1,76 @@
+// src/pages/NewsPage.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { fetchNewsData } from "../services/mongodb";
+import { SkeletonNewsGrid } from "../components/Skeleton";
+
+// Static fallback if MongoDB returns nothing
+const SAMPLE_NEWS = [
+  {
+    title: "Nifty 50 ends higher led by banking and IT stocks",
+    url: "https://www.nseindia.com/",
+    source: "Sample – Indian Markets",
+    published: "2025-11-27 15:30",
+    summary:
+      "Benchmark indices closed in the green with banking and IT heavyweights driving gains amid positive global cues.",
+  },
+  {
+    title: "Sensex climbs as Reliance and HDFC Bank rally",
+    url: "https://www.bseindia.com/",
+    source: "Sample – Indian Markets",
+    published: "2025-11-27 14:10",
+    summary:
+      "Reliance Industries and HDFC Bank led a broad-based rally on Dalal Street as investors added positions in large caps.",
+  },
+  {
+    title: "RBI policy expectations keep traders cautious on PSU banks",
+    url: "https://www.rbi.org.in/",
+    source: "Sample – Indian Markets",
+    published: "2025-11-26 11:05",
+    summary:
+      "PSU bank stocks saw rangebound moves as traders awaited clarity on RBI's stance on liquidity and rates.",
+  },
+  {
+    title: "IT stocks rebound on strong US tech earnings",
+    url: "https://www.moneycontrol.com/",
+    source: "Sample – Indian Markets",
+    published: "2025-11-25 10:20",
+    summary:
+      "Indian IT majors gained after upbeat guidance from global technology peers lifted sentiment on export-focused companies.",
+  },
+];
 
 function NewsPage() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchNews = async () => {
+    const load = async () => {
       try {
-        // Prefer backend mongo proxy first
-        try {
-          const res = await axios.get('http://localhost:5000/mongo/news');
-          console.debug('/mongo/news response status:', res.status, 'length:', Array.isArray(res.data) ? res.data.length : 'n/a');
-          if (Array.isArray(res.data) && res.data.length) {
-              console.debug('Using backend proxy /mongo/news with', res.data.length, 'articles');
-              // limit to 20 most recent
-              const limited = res.data.slice(0, 20);
-              setArticles(limited);
-              setLoading(false);
-              return;
-            }
-        } catch (e) {
-          console.debug('Backend mongo proxy failed or returned empty, trying other sources:', e && e.message ? e.message : e);
-        }
-
-        // Final fallback: previous sample feed endpoint
-        const res2 = await axios.get("http://localhost:5000/market-news");
-        setArticles((res2.data || []).slice(0, 20));
+        const data = await fetchNewsData();
+        setArticles(data.length > 0 ? data.slice(0, 20) : SAMPLE_NEWS);
       } catch (err) {
         console.error(err);
-        setArticles([]);
+        setArticles(SAMPLE_NEWS);
       } finally {
         setLoading(false);
       }
     };
-    fetchNews();
+    load();
   }, []);
 
   return (
-    <div className="page-root">
-      <h1>Market News</h1>
-      <p>Latest headlines from Yahoo Finance</p>
+    <div className="page-root page-transition">
+      <header className="header">
+        <h1>Market News</h1>
+        <p>Latest headlines from the financial world</p>
+      </header>
 
-      {loading && <p className="placeholder">Loading news...</p>}
+      {loading && <SkeletonNewsGrid count={6} />}
 
       {!loading && !articles.length && (
-        <p className="placeholder">No news available right now.</p>
+        <p className="placeholder" style={{ textAlign: "center" }}>
+          No news available right now.
+        </p>
       )}
 
       <div className="news-grid">
@@ -56,21 +81,13 @@ function NewsPage() {
                 {article.source || "Yahoo Finance"}
               </span>
               {article.published && (
-                <span className="news-time"> {article.published}</span>
+                <span className="news-time">{article.published}</span>
               )}
             </div>
             <h3>{article.title}</h3>
             {article.summary && (
               <p className="news-summary">{article.summary}</p>
             )}
-            {/* <a
-              href={article.url}
-              target="_blank"
-              rel="noreferrer"
-              className="news-link"
-            > */}
-              {/* Read article → */}
-            {/* </a> */}
           </article>
         ))}
       </div>

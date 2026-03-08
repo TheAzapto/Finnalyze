@@ -1,8 +1,7 @@
 // src/pages/MarketPage.jsx
 import React, { useEffect, useState } from "react";
-import api from "../api/backend";
-// Note: this page uses the backend `/market` endpoint (Yahoo Finance snapshot)
-// to avoid showing DB-sourced zero/placeholder prices. Backend provides an expanded ticker list.
+import { fetchMarketData } from "../services/mongodb";
+import { SkeletonTable } from "../components/Skeleton";
 
 const MarketPage = () => {
   const [rows, setRows] = useState([]);
@@ -10,11 +9,10 @@ const MarketPage = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchMarket = async () => {
+    const load = async () => {
       try {
-        // Use the backend `/market` endpoint which pulls live prices (Yahoo Finance snapshot)
-        const res = await api.get("/market");
-        setRows(res.data || []);
+        const data = await fetchMarketData();
+        setRows(data);
       } catch (err) {
         console.error(err);
         setError("Failed to load market data.");
@@ -22,20 +20,20 @@ const MarketPage = () => {
         setLoading(false);
       }
     };
-    fetchMarket();
+    load();
   }, []);
 
   return (
-    <div className="page-shell">
+    <div className="page-shell page-transition">
       <header className="header">
         <h1>Live Market Overview</h1>
-        <p>Snapshot of key indices and benchmarks powered by Yahoo Finance.</p>
+        <p>Snapshot of key indices and benchmarks powered by MongoDB Atlas.</p>
       </header>
 
       <section className="results-panel">
         <h2>Global Indices</h2>
 
-        {loading && <p className="placeholder">Loading market data…</p>}
+        {loading && <SkeletonTable rows={8} cols={5} />}
         {error && <div className="error-box">{error}</div>}
 
         {!loading && !error && (

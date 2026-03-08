@@ -1,6 +1,7 @@
 // src/pages/SentimentPage.jsx
 import React, { useState } from "react";
-import api from "../api/backend";
+import { fetchSentimentData } from "../services/mongodb";
+import { SkeletonTable } from "../components/Skeleton";
 import "../App.css";
 
 const SentimentPage = () => {
@@ -10,31 +11,22 @@ const SentimentPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch sentiment scores from backend Mongo proxy. If `company` is provided,
-  // query for that company only, otherwise fetch all.
-  const fetchSentiment = async (companyFilter = "") => {
+  const runSearch = async (companyFilter = "") => {
     setError("");
     setResults([]);
     setSelectedDetail(null);
     setLoading(true);
     try {
-      const url = companyFilter
-        ? `/mongo/sentiment?company=${encodeURIComponent(companyFilter)}`
-        : `/mongo/sentiment`;
-      const res = await api.get(url);
-      const data = res.data || [];
+      const data = await fetchSentimentData(companyFilter || undefined);
       setResults(data);
-      // If a company filter was used, auto-select the first returned detail
       if (companyFilter && data.length > 0) setSelectedDetail(data[0]);
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.error || "Failed to load sentiment data from server.");
+      setError("Failed to load sentiment data.");
     } finally {
       setLoading(false);
     }
   };
-
-  // NOTE: Do not fetch on mount. Only fetch when user explicitly searches.
 
   const formatScore = (score) =>
     typeof score === "number" ? score.toFixed(2) : score;
@@ -50,13 +42,16 @@ const SentimentPage = () => {
       setError("Please enter a company name or ticker before searching.");
       return;
     }
-    // clear any previous error and fetch for the entered company only
     setError("");
-    fetchSentiment(company.trim());
+    runSearch(company.trim());
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSearch();
   };
 
   return (
-    <>
+    <div className="page-transition">
       <header className="header">
         <h1>Market Sentiment Analyzer</h1>
         <p>
@@ -73,15 +68,26 @@ const SentimentPage = () => {
             placeholder="e.g., HDFC Bank, Reliance, TCS"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <button onClick={handleSearch} disabled={loading}>
-            {loading ? "Loading..." : "Search"}
+            {loading ? (
+              <>
+                <span className="btn-spinner" />
+                Analyzing…
+              </>
+            ) : (
+              "Search"
+            )}
           </button>
           {error && <div className="error-box">{error}</div>}
         </section>
 
         <section className="results-panel">
           <h2>Impact Scores</h2>
+
+          {loading && <SkeletonTable rows={5} cols={3} />}
+
           {!results.length && !loading && !error && (
             <p className="placeholder">
               Results will appear here after you run an analysis.
@@ -116,11 +122,11 @@ const SentimentPage = () => {
               </table>
 
               {selectedDetail && (
-                <div className="detail-card" style={{ marginTop: 16 }}>
+                <div className="detail-card">
                   <h3>{selectedDetail.name || selectedDetail.code}</h3>
                   <p>
-                    <strong>Code:</strong> {selectedDetail.code || "-"} &nbsp; 
-                    <strong>Prediction:</strong> {selectedDetail.prediction || "-"} &nbsp; 
+                    <strong>Code:</strong> {selectedDetail.code || "-"} &nbsp;
+                    <strong>Prediction:</strong> {selectedDetail.prediction || "-"} &nbsp;
                     <strong>Impact:</strong>{" "}
                     {selectedDetail.impact_score === 0 ? (
                       <em>No score</em>
@@ -138,7 +144,7 @@ const SentimentPage = () => {
 
                   <div style={{ marginTop: 8 }}>
                     <h4>Article / Summary</h4>
-                    <div className="article-text" style={{ maxHeight: 260, overflowY: "auto", whiteSpace: "pre-wrap" }}>
+                    <div className="article-text">
                       {selectedDetail.latest_article || "No article text available in the database."}
                     </div>
                   </div>
@@ -148,7 +154,7 @@ const SentimentPage = () => {
           )}
         </section>
       </main>
-    </>
+    </div>
   );
 };
 

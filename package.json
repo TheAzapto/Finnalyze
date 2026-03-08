@@ -1,0 +1,23 @@
+{
+  "name": "capstoneprojectii",
+  "version": "1.0.0",
+  "description": "This project is a Financial News Sentiment Analyzer designed to scrape financial news articles, summarize their content, and evaluate the potential market impact on specific companies. It leverages a local Large Language Model (LLM), specifically a fine-tuned version of Llama 3.1 (`fin-llama3.1-8b`), to perform advanced natural language processing tasks tailored for the financial domain.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheAzapto/CapstoneProjectII.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheAzapto/CapstoneProjectII/issues"
+  },
+  "homepage": "https://github.com/TheAzapto/CapstoneProjectII#readme",
+  "dependencies": {
+    "mongodb": "^7.1.0"
+  }
+}
