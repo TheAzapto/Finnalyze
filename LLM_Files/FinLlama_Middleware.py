@@ -1,4 +1,4 @@
-from ollama import generate, GenerateResponse
+import ollama
 from thefuzz import fuzz
 import pandas as pd
 import json
@@ -72,6 +72,8 @@ import json
 
 #     return response.response
 
+client = ollama.Client(host='http://localhost:11434')
+
 def Evaluate(sen:str) -> float:
 
     prompt=f"""You are a financial sentiment analysis expert. Your task is to evaluate the provided article and assign precise impact scores.
@@ -115,7 +117,7 @@ def Evaluate(sen:str) -> float:
     - Just the number itself (e.g., 0.65)"""
 
 
-    response: GenerateResponse = generate(model="hf.co/us4/fin-llama3.1-8b:Q5_K_M", 
+    response = client.generate(model="hf.co/us4/fin-llama3.1-8b:Q5_K_M", 
     prompt=prompt,
     options={
     'temperature': 0.1,
@@ -125,6 +127,10 @@ def Evaluate(sen:str) -> float:
     'repeat_penalty': 1.0,
     'num_ctx': 2048,
     'num_thread': 16,
-    })
+    }, format="json")
 
     return response.response
+
+
+if __name__ == "__main__":
+    print(json.loads(Evaluate("Apple Inc. announced record profits for the third quarter, with revenue up 15% year-over-year. The company's stock price surged 10% in after-hours trading."))['impact'])

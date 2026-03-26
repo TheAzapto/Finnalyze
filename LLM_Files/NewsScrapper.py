@@ -15,7 +15,7 @@ db = client['Finnalyze']
 collection = db['stockData']
 
 
-with open(os.path.join(os.getcwd(), r'backend\LLM_Files\stockList.json'), 'r') as f:
+with open(os.path.join(os.getcwd(), r'stockList.json'), 'r') as f:
     stockList = json.load(f)
 
 while True:
@@ -47,7 +47,7 @@ while True:
                 content = article['content']['summary']
                 title = article['content']['title']
             
-                response = Evaluate(content)
+                response = json.loads(Evaluate(content))['impact']
 
                 impact_score = float(response)
 

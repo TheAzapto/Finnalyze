@@ -1,0 +1,7 @@
+ollama
+thefuzz
+pandas
+yfinance
+pymongo
+python-dotenv
+requests
